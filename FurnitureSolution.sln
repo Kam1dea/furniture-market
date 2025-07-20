@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Furniture.Domain", "Furniture.Domain\Furniture.Domain.csproj", "{1DBA7061-B6D1-434E-B053-937284CC0F14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Furniture.Infrastructure", "Furniture.Infrastructure\Furniture.Infrastructure.csproj", "{86497248-830B-4C9F-AF77-01E9A7C30BE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Furniture.WebApi", "Furniture.WebApi\Furniture.WebApi.csproj", "{12B0FDB4-2752-424F-9DBF-C04410F835B4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1DBA7061-B6D1-434E-B053-937284CC0F14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DBA7061-B6D1-434E-B053-937284CC0F14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DBA7061-B6D1-434E-B053-937284CC0F14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DBA7061-B6D1-434E-B053-937284CC0F14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86497248-830B-4C9F-AF77-01E9A7C30BE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86497248-830B-4C9F-AF77-01E9A7C30BE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86497248-830B-4C9F-AF77-01E9A7C30BE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86497248-830B-4C9F-AF77-01E9A7C30BE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12B0FDB4-2752-424F-9DBF-C04410F835B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12B0FDB4-2752-424F-9DBF-C04410F835B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12B0FDB4-2752-424F-9DBF-C04410F835B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12B0FDB4-2752-424F-9DBF-C04410F835B4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
