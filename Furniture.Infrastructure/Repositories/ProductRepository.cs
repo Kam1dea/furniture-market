@@ -7,14 +7,14 @@ namespace Furniture.Infrastructure.Repositories;
 
 public class ProductRepository: IProductRepository
 {
-    private readonly FurnitureDb _context;
+    private readonly ApplicationDbContext _context;
 
-    public ProductRepository(FurnitureDb context)
+    public ProductRepository(ApplicationDbContext context)
     {
         _context = context;
     }
 
-    public async Task<IReadOnlyList<Product>> GetAllAsync()
+    public async Task<IReadOnlyList<Domain.Entities.Product>> GetAllAsync()
     {
         var products = _context.Products.AsNoTracking().ToListAsync();
         

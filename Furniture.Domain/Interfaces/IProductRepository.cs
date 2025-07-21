@@ -4,5 +4,5 @@ namespace Furniture.Domain.Interfaces;
 
 public interface IProductRepository
 {
-    Task<IReadOnlyList<Product>> GetAllAsync();
+    Task<IReadOnlyList<Entities.Product>> GetAllAsync();
 }

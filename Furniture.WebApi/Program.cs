@@ -19,7 +19,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
         options.Password.RequireNonAlphanumeric = true;
         options.Password.RequiredLength = 12;
     })
-    .AddEntityFrameworkStores<FurnitureDb>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
 var app = builder.Build();

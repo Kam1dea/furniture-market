@@ -1,0 +1,14 @@
+using Furniture.Domain.Enums;
+using Microsoft.AspNetCore.Identity;
+
+namespace Furniture.Domain.Entities;
+
+public class User: IdentityUser<string>
+{
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public UserRole UserRole { get; set; }
+
+    public ICollection<Review> Reviews { get; set; } =  new List<Review>();
+    public WorkerProfile? WorkerProfile { get; set; }
+}
