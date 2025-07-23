@@ -1,41 +1,25 @@
-# Build Folders
+# Build
 bin/
 obj/
 artifacts/
 
-# User-specific files
+# IDE
+.vs/
 *.user
-*.userosscache
 *.suo
+*.userosscache
 *.userprefs
 *.vcxproj.user
 
-# IDE - Visual Studio
-.vs/
-*.aps
-*.ncb
-*.opensdf
-*.sdf
-*.cache
-*.ilk
-*.log
-*.tmp
-*.pidb
-*.svclog
-*.prof
+# Rider / IntelliJ
+.idea/
 
-# IDE - Visual Studio Code
+# VS Code
 .vscode/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-
-# IDE - Rider
-.idea/
-*.iws
-*.iml
-*.ipr
 
 # NuGet
 packages/
@@ -46,59 +30,45 @@ project.assets.json
 NuGet.Config
 nuget.config
 
-# dotnet ef migrations (временные артефакты)
+# EF Core временные файлы
 **/MigrationBackup/
 **/*.EntityFrameworkCore.targets
 
-# Build results (дополнительно)
+# Build output
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
-[Rr]eleases/
 x64/
 x86/
 [Ww][Ii][Nn]/
-[А-Яа-я]*
 
 # Configuration
 appsettings.Development.json
 appsettings.Staging.json
 appsettings.Production.json
 secrets.json
-
-# User secrets (НЕ коммитим!)
 **/secrets.json
 **/secrets.json.user
 
-# Docker
-docker-compose.override.yml
-.DS_Store
+# User secrets
+secrets.json
+*.secrets.json
 
-# Logs
-*.log
-logs
-*.vscode-log*
-
-# Environment variables
+# Environment
 .env
 .env.local
 .env.development
 .env.staging
 .env.production
 
-# Browser cache
-Thumbs.db
-Desktop.ini
-*.DS_Store
-ehthumbs.db
+# Logs
+*.log
+logs/
+*.vscode-log*
 
-# Coverage
-.coverage
-coverage.xml
-*.coverage
-*.lcov
-
-# Temporary files
+# Temp files
 *~
 *.swp
-.DS_Store?  
+.DS_Store
+Thumbs.db
+Desktop.ini
