@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Furniture.Infrastructure.Data;
+namespace Furniture.Infrastructure.Persistence;
 
-public class ApplicationDbContext : IdentityDbContext<IdentityUser>
+public class ApplicationDbContext : IdentityDbContext<User>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {

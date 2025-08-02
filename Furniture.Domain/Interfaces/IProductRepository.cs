@@ -4,5 +4,9 @@ namespace Furniture.Domain.Interfaces;
 
 public interface IProductRepository
 {
-    Task<IReadOnlyList<Entities.Product>> GetAllAsync();
+    Task<IEnumerable<Product>> GetAllAsync();
+    Task<Product?> GetByIdAsync(int id);
+    Task<Product?> CreateAsync(Product product);
+    Task<Product?> UpdateAsync(int id, Product product);
+    Task<bool> DeleteAsync(int id);
 }

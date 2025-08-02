@@ -1,5 +1,7 @@
+using Furniture.Application.Mapping;
+using Furniture.Domain.Entities;
 using Furniture.Infrastructure;
-using Furniture.Infrastructure.Data;
+using Furniture.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,17 +13,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+builder.Services.AddIdentity<User, IdentityRole>(options =>
     {
+        options.SignIn.RequireConfirmedAccount = false;
         options.Password.RequireDigit = true;
         options.Password.RequireLowercase = true;
         options.Password.RequireUppercase = true;
         options.Password.RequireNonAlphanumeric = true;
-        options.Password.RequiredLength = 12;
+        options.Password.RequiredLength = 8;
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -31,7 +33,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
