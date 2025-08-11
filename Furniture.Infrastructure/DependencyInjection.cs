@@ -1,3 +1,4 @@
+using Furniture.Application.Services;
 using Furniture.Domain.Interfaces;
 using Furniture.Infrastructure.Persistence;
 using Furniture.Infrastructure.Repositories;
@@ -18,6 +19,7 @@ public static class DependencyInjection
         
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
+        services.AddScoped<ITokenService, TokenService>();
         return services;
     }
 }

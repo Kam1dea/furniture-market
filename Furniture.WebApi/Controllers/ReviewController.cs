@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using Furniture.Application.Dtos;
 using Furniture.Application.Dtos.Review;
+using Furniture.Application.Exceptions;
 using Furniture.Domain.Entities;
 using Furniture.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -27,11 +28,6 @@ public class ReviewController: ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllAsync()
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        
         var reviews = await _reviewRepository.GetAllAsync();
         return Ok(_mapper.Map<IEnumerable<Review>>(reviews));
     }
@@ -39,16 +35,11 @@ public class ReviewController: ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        
         var review = await _reviewRepository.GetByIdAsync(id);
 
         if (review == null)
         {
-            return NotFound();
+            throw new NotFoundException($"Product with ID {id} not found.");
         }
         
         return Ok(_mapper.Map<Review>(review));
@@ -61,11 +52,6 @@ public class ReviewController: ControllerBase
         //     throw new ValidationException("Review must have a productId or WorkerProfileId");
         // if (review.ProductId.HasValue && review.WorkerProfileId.HasValue)
         //     throw new ValidationException("Review cannot have both ProductId and WorkerProfileId");
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        
         //var username = User.Identity.Name;
         //var user = await _userManager.FindByNameAsync(username);
         
@@ -79,15 +65,10 @@ public class ReviewController: ControllerBase
     [Route("{id:int}")]
     public async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody] UpdateReviewDto review)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        
         var reviewEntity = await _reviewRepository.GetByIdAsync(id);
         if (reviewEntity == null)
         {
-            return NotFound();
+            throw new NotFoundException($"Product with ID {id} not found.");
         }
         _mapper.Map(review, reviewEntity);
         await _reviewRepository.UpdateAsync(id, reviewEntity);
@@ -98,11 +79,6 @@ public class ReviewController: ControllerBase
     [Route("{id:int}")]
     public async Task<IActionResult> DeleteAsync([FromRoute] int id)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        
         await _reviewRepository.DeleteAsync(id);
         
         return NoContent();

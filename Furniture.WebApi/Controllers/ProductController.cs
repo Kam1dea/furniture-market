@@ -1,6 +1,7 @@
 using AutoMapper;
 using Furniture.Application.Dtos;
 using Furniture.Application.Dtos.Product;
+using Furniture.Application.Exceptions;
 using Furniture.Domain.Entities;
 using Furniture.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -23,11 +24,6 @@ public class ProductController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllAsync()
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         var products = await _productRepository.GetAllAsync();
         return Ok(_mapper.Map<IEnumerable<Product>>(products));
     }
@@ -35,16 +31,11 @@ public class ProductController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         var product = await _productRepository.GetByIdAsync(id);
 
         if (product == null)
         {
-            return NotFound();
+            throw new NotFoundException($"Product with ID {id} not found.");
         }
 
         return Ok(_mapper.Map<Product>(product));
@@ -53,11 +44,6 @@ public class ProductController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateAsync([FromBody] CreateProductDto product)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         var productEntity = _mapper.Map<Product>(product);
         await _productRepository.CreateAsync(productEntity);
         return Ok(_mapper.Map<ProductDto>(productEntity));
@@ -67,15 +53,10 @@ public class ProductController : ControllerBase
     [Route("{id:int}")]
     public async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody] UpdateProductDto product)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         var productEntity = await _productRepository.GetByIdAsync(id);
         if (productEntity == null)
         {
-            return NotFound();
+            throw new NotFoundException($"Product with ID {id} not found.");
         }
         _mapper.Map(product, productEntity);
         await _productRepository.UpdateAsync(id, productEntity);
@@ -87,11 +68,6 @@ public class ProductController : ControllerBase
     [Route("{id:int}")]
     public async Task<IActionResult> DeleteAsync([FromRoute] int id)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         await _productRepository.DeleteAsync(id);
 
         return NoContent();
