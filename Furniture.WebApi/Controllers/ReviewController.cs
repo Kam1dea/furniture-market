@@ -48,15 +48,11 @@ public class ReviewController: ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddAsync([FromBody] CreateReviewDto reviewDto)
     {
-        // if (!review.ProductId.HasValue && !review.WorkerProfileId.HasValue)
-        //     throw new ValidationException("Review must have a productId or WorkerProfileId");
-        // if (review.ProductId.HasValue && review.WorkerProfileId.HasValue)
-        //     throw new ValidationException("Review cannot have both ProductId and WorkerProfileId");
-        //var username = User.Identity.Name;
-        //var user = await _userManager.FindByNameAsync(username);
+        var username = User.Identity.Name;
+        var user = await _userManager.FindByNameAsync(username);
         
         var reviewEntity = _mapper.Map<Review>(reviewDto);
-        //reviewEntity.UserId = user.Id;
+        reviewEntity.UserId = user.Id;
         await _reviewRepository.CreateAsync(reviewEntity);
         return Ok(_mapper.Map<ReviewDto>(reviewEntity));
     }

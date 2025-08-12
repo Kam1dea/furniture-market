@@ -4,6 +4,7 @@ using Furniture.Application.Dtos.Product;
 using Furniture.Application.Exceptions;
 using Furniture.Domain.Entities;
 using Furniture.Domain.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Furniture.WebApi.Controllers;
@@ -14,11 +15,13 @@ public class ProductController : ControllerBase
 {
     private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
+    private UserManager<User> _userManager;
 
-    public ProductController(IProductRepository productRepository, IMapper mapper)
+    public ProductController(IProductRepository productRepository, IMapper mapper, UserManager<User> userManager)
     {
         _productRepository = productRepository;
         _mapper = mapper;
+        _userManager = userManager;
     }
 
     [HttpGet]
@@ -44,7 +47,11 @@ public class ProductController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateAsync([FromBody] CreateProductDto product)
     {
+        var username = User.Identity.Name;
+        var user = await _userManager.FindByNameAsync(username);
+        
         var productEntity = _mapper.Map<Product>(product);
+        productEntity.WorkerProfileId = user.Id;
         await _productRepository.CreateAsync(productEntity);
         return Ok(_mapper.Map<ProductDto>(productEntity));
     }

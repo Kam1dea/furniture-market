@@ -28,15 +28,12 @@ public class AuthController: ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-        
         var user = new User
         {
             UserName = dto.Email,
             Email = dto.Email,
-            FirstName = dto.FirstName,
-            LastName = dto.LastName
+            FirstName = dto.FirstName ?? string.Empty,
+            LastName = dto.LastName ?? string.Empty
         };
         
         var result = await _userManager.CreateAsync(user, dto.Password);

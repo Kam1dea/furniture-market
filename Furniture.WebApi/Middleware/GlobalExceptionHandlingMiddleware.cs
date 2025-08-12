@@ -1,9 +1,6 @@
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using Furniture.Application.Dtos;
 using Furniture.Application.Exceptions;
-using FluentValidation;
-using FluentValidation.Results;
 using ValidationException = FluentValidation.ValidationException;
 
 namespace Furniture.WebApi.Middleware;

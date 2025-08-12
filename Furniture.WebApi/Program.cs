@@ -18,8 +18,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
-builder.Services.AddFluentValidationAutoValidation(); // 🔽 Это ключевое!
-builder.Services.AddValidatorsFromAssemblyContaining<ProductCreateDtoValidator>();
+builder.Services.AddFluentValidationAutoValidation(); 
+builder.Services.AddValidatorsFromAssemblyContaining<CreateProductDtoValidator>();
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
