@@ -6,6 +6,7 @@ using Furniture.Application.Dtos.Account;
 using Furniture.Application.Services;
 using Furniture.Domain.Entities;
 using Furniture.Infrastructure.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -78,5 +79,17 @@ public class AuthController : ControllerBase
             RefreshToken = refreshToken,
             IsSuccess = true
         });
+    }
+    
+    [Authorize]
+    [HttpGet("me")]
+    public IActionResult GetCurrentUser()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        var name = User.FindFirstValue(ClaimTypes.Name);
+        var roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value);
+
+        return Ok(new { userId, email, name, roles });
     }
 }
