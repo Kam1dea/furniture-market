@@ -2,6 +2,7 @@ using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Furniture.Application.Mapping;
+using Furniture.Application.Services;
 using Furniture.Domain.Entities;
 using Furniture.Infrastructure;
 using Furniture.Infrastructure.Persistence;

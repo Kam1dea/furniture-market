@@ -6,7 +6,6 @@ public class WorkerProfile
     public string? Description { get; set; }
     public string? Location { get; set; }
     public double Rating { get; set; }
-    
     public string? WorkerId { get; set; }
     public User? Worker { get; set; }
     

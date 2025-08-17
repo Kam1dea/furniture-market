@@ -14,7 +14,7 @@ public class Product
     public double Height { get; set; }
     public double Depth { get; set; }
 
-    public string WorkerProfileId { get; set; }
+    public int WorkerProfileId { get; set; }
     public WorkerProfile? WorkerProfile { get; set; }
 
     public ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();

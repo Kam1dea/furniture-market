@@ -51,7 +51,8 @@ public class ProductController : ControllerBase
         var user = await _userManager.FindByNameAsync(username);
         
         var productEntity = _mapper.Map<Product>(product);
-        productEntity.WorkerProfileId = user.Id;
+        if (user.UserRole.Equals("worker") || user.UserRole.Equals("admin"))
+            productEntity.WorkerProfileId = user.WorkerProfile.Id;
         await _productRepository.CreateAsync(productEntity);
         return Ok(_mapper.Map<ProductDto>(productEntity));
     }

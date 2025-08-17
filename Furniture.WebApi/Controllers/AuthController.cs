@@ -3,7 +3,9 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Furniture.Application.Dtos.Account;
+using Furniture.Application.Services;
 using Furniture.Domain.Entities;
+using Furniture.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -12,17 +14,18 @@ namespace Furniture.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController: ControllerBase
+public class AuthController : ControllerBase
 {
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly IConfiguration _configuration;
+    private readonly ITokenService _tokenService;
 
-    public AuthController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+    public AuthController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager,
+        IConfiguration configuration, ITokenService tokenService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
-        _configuration = configuration;
+        _tokenService = tokenService;
     }
 
     [HttpPost("register")]
@@ -35,19 +38,19 @@ public class AuthController: ControllerBase
             FirstName = dto.FirstName ?? string.Empty,
             LastName = dto.LastName ?? string.Empty
         };
-        
+
         var result = await _userManager.CreateAsync(user, dto.Password);
 
-        var role = dto.Role switch
+        var role = dto.UserRole switch
         {
             "Admin" => "Admin",
             "Worker" => "Worker",
             _ => "User"
         };
-        
+
         if (!await _roleManager.RoleExistsAsync(role))
             await _roleManager.CreateAsync(new IdentityRole(role));
-        
+
         await _userManager.AddToRoleAsync(user, role);
 
         return Ok(new { Message = "User registered successfully" });
@@ -58,11 +61,13 @@ public class AuthController: ControllerBase
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
         if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
-            return Unauthorized(new AuthResponseDto{IsSuccess = false, Errors = new[] {"Invalid email or password"}});
-        
-        var token = GenerateJwtToken(user);
-        var refreshToken = GenerateRefreshToken();
-        
+            return Unauthorized(new AuthResponseDto
+                { IsSuccess = false, Errors = new[] { "Invalid email or password" } });
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var token = _tokenService.GenerateJwtToken(user, roles);
+        var refreshToken = _tokenService.GenerateRefreshToken();
+
         user.RefreshToken = refreshToken;
         user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
         await _userManager.UpdateAsync(user);
@@ -73,40 +78,5 @@ public class AuthController: ControllerBase
             RefreshToken = refreshToken,
             IsSuccess = true
         });
-    }
-    
-    private string GenerateJwtToken(User user)
-    {
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-        var claims = new[]
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.NameIdentifier, user.Id),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}")
-        };
-
-        var roles = _userManager.GetRolesAsync(user).Result;
-        claims = claims.Concat(roles.Select(r => new Claim(ClaimTypes.Role, r))).ToArray();
-
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.Now.AddMinutes(30),
-            signingCredentials: credentials);
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
-
-    private string GenerateRefreshToken()
-    {
-        var randomNumber = new byte[32];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(randomNumber);
-        return Convert.ToBase64String(randomNumber);
     }
 }
