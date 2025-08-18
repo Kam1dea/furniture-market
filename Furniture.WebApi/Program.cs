@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -75,7 +76,6 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
@@ -83,6 +83,8 @@ builder.Services.AddAuthentication(options =>
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap.Clear();
 
 var app = builder.Build();
 

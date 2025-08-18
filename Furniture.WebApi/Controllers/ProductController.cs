@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AutoMapper;
 using Furniture.Application.Dtos;
 using Furniture.Application.Dtos.Product;
@@ -47,12 +48,11 @@ public class ProductController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateAsync([FromBody] CreateProductDto product)
     {
-        var username = User.Identity.Name;
-        var user = await _userManager.FindByNameAsync(username);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await _userManager.FindByIdAsync(userId);
         
         var productEntity = _mapper.Map<Product>(product);
-        if (user.UserRole.Equals("worker") || user.UserRole.Equals("admin"))
-            productEntity.WorkerProfileId = user.WorkerProfile.Id;
+        product.WorkerProfileId = user.WorkerProfile.Id;
         await _productRepository.CreateAsync(productEntity);
         return Ok(_mapper.Map<ProductDto>(productEntity));
     }
