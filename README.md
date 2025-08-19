@@ -6,4 +6,3 @@ Pet-проект: Furniture Market API (в разработке)
 Настроена глобальная обработка ошибок с помощью GlobalExceptionHandler. 
 Планируется реализация: загрузка изображений (ProductImage, ReviewImage), управление ролями пользователей, unit-тесты 
 Используется: ASP.NET Core, Entity Framework Core, PostgreSQL, REST API. 
-Проект строится с учётом масштабируемости. 
