@@ -1,7 +1,7 @@
-using Furniture.Application.Dtos.Product;
 using FluentValidation;
+using Furniture.Application.Dtos.Product;
 
-namespace Infrastructure.Application.Validators
+namespace Furniture.Application.Validators
 {
     public class CreateProductDtoValidator : AbstractValidator<CreateProductDto>
     {

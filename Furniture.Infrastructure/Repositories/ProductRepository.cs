@@ -1,6 +1,5 @@
-using AutoMapper;
+using Furniture.Application.Interfaces.Repositories;
 using Furniture.Domain.Entities;
-using Furniture.Domain.Interfaces;
 using Furniture.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 

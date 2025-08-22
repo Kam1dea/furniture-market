@@ -1,15 +1,10 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using Furniture.Application.Dtos.Account;
-using Furniture.Application.Services;
+using Furniture.Application.Interfaces.Services;
 using Furniture.Domain.Entities;
-using Furniture.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Furniture.WebApi.Controllers;
 
@@ -91,5 +86,30 @@ public class AuthController : ControllerBase
         var roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value);
 
         return Ok(new { userId, email, name, roles });
+    }
+    
+    [HttpGet("debug")]
+    [Authorize]
+    public IActionResult DebugClaims()
+    {
+        return Ok(new
+        {
+            IsAuthenticated = User.Identity.IsAuthenticated,
+            Name = User.Identity.Name, // берётся из ClaimTypes.Name
+            Claims = User.Claims.Select(c => new
+            {
+                Type = c.Type,
+                Value = c.Value,
+                // Покажем, как .NET интерпретирует тип
+                FriendlyType = c.Type switch
+                {
+                    "nameid" => "ClaimTypes.NameIdentifier",
+                    "email" => "ClaimTypes.Email",
+                    "name" => "ClaimTypes.Name",
+                    "role" => "ClaimTypes.Role",
+                    _ => c.Type
+                }
+            })
+        });
     }
 }

@@ -1,6 +1,6 @@
 using Furniture.Domain.Entities;
 
-namespace Furniture.Domain.Interfaces;
+namespace Furniture.Application.Interfaces.Repositories;
 
 public interface IWorkerProfileRepository
 {

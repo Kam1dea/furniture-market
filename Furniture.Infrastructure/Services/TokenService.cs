@@ -2,13 +2,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Furniture.Application.Interfaces.Services;
+using Furniture.Application.Services;
 using Furniture.Domain.Entities;
-using Furniture.Infrastructure.Services;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Furniture.Application.Services;
+namespace Furniture.Infrastructure.Services;
 
 public class TokenService : ITokenService
     {
@@ -35,14 +35,29 @@ public class TokenService : ITokenService
 
             claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
-            var token = new JwtSecurityToken(
-                issuer:  _jwtSettings.Issuer,
-                audience: _jwtSettings.Audience,
-                claims: claims,
-                expires: DateTime.Now.AddDays(7),
-                signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            // var token = new JwtSecurityToken(
+            //     issuer:  _jwtSettings.Issuer,
+            //     audience: _jwtSettings.Audience,
+            //     claims: claims,
+            //     expires: DateTime.Now.AddDays(7),
+            //     signingCredentials: credentials);
+            
+            //return new JwtSecurityTokenHandler().WriteToken(token);
+            
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(7),
+                SigningCredentials = credentials,
+                Issuer = _jwtSettings.Issuer,
+                Audience = _jwtSettings.Audience
+            };
+            
+            var tokenHandler = new JwtSecurityTokenHandler();
+        
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+        
+            return tokenHandler.WriteToken(token);
         }
 
         public string GenerateRefreshToken()

@@ -22,9 +22,5 @@ public class WorkerProfileConfiguration:  IEntityTypeConfiguration<WorkerProfile
         builder.HasMany(wp => wp.Products)
             .WithOne(p => p.WorkerProfile)
             .HasForeignKey(p => p.WorkerProfileId);
-        
-        builder.HasMany(wp => wp.Reviews)
-            .WithOne(r => r.WorkerProfile)
-            .HasForeignKey(r => r.WorkerProfileId);
     }
 }

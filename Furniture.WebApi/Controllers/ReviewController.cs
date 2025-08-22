@@ -1,10 +1,8 @@
-using System.ComponentModel.DataAnnotations;
-using AutoMapper;
-using Furniture.Application.Dtos;
 using Furniture.Application.Dtos.Review;
 using Furniture.Application.Exceptions;
+using Furniture.Application.Interfaces.Services;
 using Furniture.Domain.Entities;
-using Furniture.Domain.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,69 +12,85 @@ namespace Furniture.WebApi.Controllers;
 [Route("api/[controller]")]
 public class ReviewController: ControllerBase
 {
-    private readonly IReviewRepository _reviewRepository;
-    private readonly IMapper _mapper;
-    private readonly UserManager<User> _userManager;
+    private readonly IReviewService  _reviewService;
 
-    public ReviewController(IReviewRepository reviewRepository, IMapper mapper, UserManager<User> userManager)
+    public ReviewController(IReviewService reviewService)
     {
-        _reviewRepository = reviewRepository;
-        _mapper = mapper;
-        _userManager = userManager;
+        _reviewService = reviewService;
     }
 
+    /// <summary>
+    /// Получить все отзывы
+    /// </summary>
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync()
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<ReviewDto>>> GetAll()
     {
-        var reviews = await _reviewRepository.GetAllAsync();
-        return Ok(_mapper.Map<IEnumerable<Review>>(reviews));
+        var reviews = await _reviewService.GetAllAsync();
+        return Ok(reviews);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
+    /// <summary>
+    /// Получить отзыв по ID
+    /// </summary>
+    [HttpGet("{id:int}")]
+    [AllowAnonymous]
+    public async Task<ActionResult<ReviewDto>> GetById(int id)
     {
-        var review = await _reviewRepository.GetByIdAsync(id);
-
+        var review = await _reviewService.GetByIdAsync(id);
         if (review == null)
-        {
-            throw new NotFoundException($"Product with ID {id} not found.");
-        }
+            return NotFound();
         
-        return Ok(_mapper.Map<Review>(review));
+        return Ok(review);
     }
 
+    /// <summary>
+    /// Получить все отзывы для товара
+    /// </summary>
+    [HttpGet("my")]
+    [Authorize]
+    public async Task<ActionResult<IEnumerable<ReviewDto>>> GetMyReviews()
+    {
+        var reviews = await _reviewService.GetMyReviewsAsync();
+        return Ok(reviews);
+    }
+
+    /// <summary>
+    /// Создать новый отзыв
+    /// </summary>
     [HttpPost]
-    public async Task<IActionResult> AddAsync([FromBody] CreateReviewDto reviewDto)
+    [Authorize]
+    public async Task<ActionResult<int>> Create(CreateReviewDto dto)
     {
-        var username = User.Identity.Name;
-        var user = await _userManager.FindByNameAsync(username);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
         
-        var reviewEntity = _mapper.Map<Review>(reviewDto);
-        reviewEntity.UserId = user.Id;
-        await _reviewRepository.CreateAsync(reviewEntity);
-        return Ok(_mapper.Map<ReviewDto>(reviewEntity));
+        var reviewId = await _reviewService.CreateReviewAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = reviewId }, reviewId);
     }
 
-    [HttpPut]
-    [Route("{id:int}")]
-    public async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody] UpdateReviewDto review)
+    /// <summary>
+    /// Обновить свой отзыв
+    /// </summary>
+    [HttpPut("{id:int}")]
+    [Authorize]
+    public async Task<ActionResult> Update(int id, UpdateReviewDto dto)
     {
-        var reviewEntity = await _reviewRepository.GetByIdAsync(id);
-        if (reviewEntity == null)
-        {
-            throw new NotFoundException($"Product with ID {id} not found.");
-        }
-        _mapper.Map(review, reviewEntity);
-        await _reviewRepository.UpdateAsync(id, reviewEntity);
-        return Ok(_mapper.Map<Review>(reviewEntity));
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        
+        await _reviewService.UpdateReviewAsync(id, dto);
+        return NoContent();
     }
 
-    [HttpDelete]
-    [Route("{id:int}")]
-    public async Task<IActionResult> DeleteAsync([FromRoute] int id)
+    /// <summary>
+    /// Удалить свой отзыв
+    /// </summary>
+    [HttpDelete("{id:int}")]
+    [Authorize]
+    public async Task<ActionResult> Delete(int id)
     {
-        await _reviewRepository.DeleteAsync(id);
-        
+        await _reviewService.DeleteReviewAsync(id);
         return NoContent();
     }
 }

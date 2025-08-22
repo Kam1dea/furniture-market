@@ -1,5 +1,7 @@
+using Furniture.Application.Interfaces;
+using Furniture.Application.Interfaces.Repositories;
+using Furniture.Application.Interfaces.Services;
 using Furniture.Application.Services;
-using Furniture.Domain.Interfaces;
 using Furniture.Infrastructure.Persistence;
 using Furniture.Infrastructure.Repositories;
 using Furniture.Infrastructure.Services;
@@ -19,11 +21,23 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
         
         services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
+
+        services.AddHttpContextAccessor();
+        
+        services.AddScoped<ITokenService, TokenService>();
+        
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
         
         services.AddScoped<IProductRepository, ProductRepository>();
+        
         services.AddScoped<IReviewRepository, ReviewRepository>();
+        services.AddScoped<IReviewService, ReviewService>();
+        
         services.AddScoped<IWorkerProfileRepository, WorkerProfileRepository>();
-        services.AddScoped<ITokenService, TokenService>();
+        
+        
         return services;
     }
 }

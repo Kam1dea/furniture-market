@@ -1,9 +1,8 @@
 using AutoMapper;
-using Furniture.Application.Dtos;
 using Furniture.Application.Dtos.Product;
 using Furniture.Domain.Entities;
 
-namespace Furniture.Application.Mapping;
+namespace Furniture.Application.Mappings;
 
 public class ProductProfile: Profile
 {

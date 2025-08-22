@@ -1,6 +1,5 @@
-using AutoMapper;
+using Furniture.Application.Interfaces.Repositories;
 using Furniture.Domain.Entities;
-using Furniture.Domain.Interfaces;
 using Furniture.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,52 +14,66 @@ public class ReviewRepository : IReviewRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Review>> GetAllAsync()
-    {
-        var reviews = await _context.Reviews.AsNoTracking().ToListAsync();
 
-        return reviews;
+    public async Task<Review?> GetByIdAsync(int id, CancellationToken ct = default)
+    {
+        return await _context.Reviews
+            .Include(r => r.User)
+            .Include(r => r.Product)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r => r.Id == id, ct);
     }
 
-    public async Task<Review?> GetByIdAsync(int id)
+    public async Task<IEnumerable<Review>> GetAllAsync(CancellationToken ct = default)
     {
-        var review = await _context.Reviews.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
-        return review;
+        return await _context.Reviews
+            .Include(r => r.User)
+            .Include(r => r.Product)
+            .AsNoTracking()
+            .ToListAsync(ct);
     }
 
-    public async Task<Review?> CreateAsync(Review review)
+    public async Task<IEnumerable<Review>> GetByProductIdAsync(int productId, CancellationToken ct = default)
     {
-        await _context.Reviews.AddAsync(review);
-        await _context.SaveChangesAsync();
-        return review;
+        return await _context.Reviews
+            .Where(r => r.ProductId == productId)
+            .Include(r => r.User)
+            .OrderByDescending(r => r.CreatedOn)
+            .ToListAsync(ct);
     }
 
-    public async Task<Review?> UpdateAsync(int id, Review review)
+    public async Task<IEnumerable<Review>> GetByUserIdAsync(string userId, CancellationToken ct = default)
     {
-        var existingReview = await _context.Reviews.FirstOrDefaultAsync(r => r.Id == id);
-
-        if (existingReview == null)
-        {
-            return null;
-        }
-        
-        _context.Entry(existingReview).CurrentValues.SetValues(review);
-        await _context.SaveChangesAsync();
-        
-        return existingReview;
+        return await _context.Reviews
+            .Where(r => r.UserId == userId)
+            .Include(r => r.Product)
+            .OrderByDescending(r => r.CreatedOn)
+            .ToListAsync(ct);
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task AddAsync(Review review, CancellationToken ct = default)
     {
-        var existingReview = await _context.Reviews.FirstOrDefaultAsync(r => r.Id == id);
+        await _context.Reviews.AddAsync(review, ct);
+    }
 
-        if (existingReview == null)
-        {
-            return false;
-        }
-        
-        _context.Reviews.Remove(existingReview);
-        await _context.SaveChangesAsync();
-        return true;
+    public async Task UpdateAsync(Review review, CancellationToken ct = default)
+    {
+        _context.Reviews.Update(review);
+    }
+
+    public async Task DeleteAsync(Review review, CancellationToken ct = default)
+    {
+        _context.Reviews.Remove(review);
+    }
+
+    public async Task SaveAsync(CancellationToken ct = default)
+    {
+        await _context.SaveChangesAsync(ct);
+    }
+
+    public async Task<bool> ExistsByUserAndProductAsync(string userId, int productId, CancellationToken ct = default)
+    {
+        return await _context.Reviews
+            .AnyAsync(r => r.UserId == userId && r.ProductId == productId, ct);
     }
 }

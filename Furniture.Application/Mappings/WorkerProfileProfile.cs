@@ -2,7 +2,7 @@ using AutoMapper;
 using Furniture.Application.Dtos.WorkerProfile;
 using Furniture.Domain.Entities;
 
-namespace Furniture.Application.Mapping;
+namespace Furniture.Application.Mappings;
 
 public class WorkerProfileProfile: Profile
 {

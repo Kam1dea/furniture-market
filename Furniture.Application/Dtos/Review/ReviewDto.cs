@@ -6,8 +6,8 @@ public class ReviewDto
     public int Rating { get; set; }
     public string? Tittle { get; set; }
     public string? Content { get; set; }
-    public int? ProductId { get; set; }
-    public int? WorkerProfileId { get; set; }
-    public string? UserId { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public DateTime ModifiedOn { get; set; }
+    public string? UserName { get; set; }
     //public ICollection<ReviewImage>? ReviewImages { get; set; }
 }

@@ -1,6 +1,6 @@
 using Furniture.Domain.Entities;
 
-namespace Furniture.Infrastructure.Services;
+namespace Furniture.Application.Interfaces.Services;
 
 public interface ITokenService
 {

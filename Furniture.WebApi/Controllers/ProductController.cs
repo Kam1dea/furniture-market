@@ -1,10 +1,9 @@
 using System.Security.Claims;
 using AutoMapper;
-using Furniture.Application.Dtos;
 using Furniture.Application.Dtos.Product;
 using Furniture.Application.Exceptions;
+using Furniture.Application.Interfaces.Repositories;
 using Furniture.Domain.Entities;
-using Furniture.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

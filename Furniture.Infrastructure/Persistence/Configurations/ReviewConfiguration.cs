@@ -25,10 +25,5 @@ public class ReviewConfiguration:  IEntityTypeConfiguration<Review>
             .WithMany(p => p.Reviews)
             .HasForeignKey(r => r.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
-        
-        builder.HasOne(r => r.WorkerProfile)
-            .WithMany(wp => wp.Reviews)
-            .HasForeignKey(r => r.WorkerProfileId)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -4,7 +4,9 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-      <UserSecretsId>e02d4435-59aa-42a1-82f1-debf10e101f5</UserSecretsId>
+        <UserSecretsId>e02d4435-59aa-42a1-82f1-debf10e101f5</UserSecretsId>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>1591</NoWarn> <!-- Отключает предупреждения, если нет комментариев -->
   </PropertyGroup>
 
     <ItemGroup>
