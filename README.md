@@ -1,0 +1,8 @@
+Pet-проект: Furniture Market API (в разработке)
+Разрабатываемый backend для платформы-маркетплейса с поддержкой товаров и отзывов.
+
+Реализована аутентификация и авторизация через JWT. 
+Добавлены сущности: Product, Review, WorkerProfile и соответствующие репозитории. 
+Настроена глобальная обработка ошибок с помощью GlobalExceptionHandler. 
+Планируется реализация: загрузка изображений (ProductImage, ReviewImage), управление ролями пользователей, тесты 
+Используется: ASP.NET Core, Entity Framework Core, PostgreSQL, REST API. 
