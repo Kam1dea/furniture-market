@@ -10,7 +10,6 @@ public class UserConfiguration: IEntityTypeConfiguration<User>
     {
         builder.Property(u => u.FirstName).IsRequired().HasMaxLength(50);
         builder.Property(u => u.LastName).IsRequired().HasMaxLength(50);
-        builder.Property(u => u.UserRole).HasConversion<string>();
         
         builder.HasIndex(u => new { u.FirstName, u.LastName })
             .HasDatabaseName("IX_Users_FirstName_LastName");

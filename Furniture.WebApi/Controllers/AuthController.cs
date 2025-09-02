@@ -1,10 +1,13 @@
 using System.Security.Claims;
 using Furniture.Application.Dtos.Account;
 using Furniture.Application.Interfaces.Services;
+using Furniture.Application.Services;
 using Furniture.Domain.Entities;
+using Furniture.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace Furniture.WebApi.Controllers;
 
@@ -13,60 +16,81 @@ namespace Furniture.WebApi.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly UserManager<User> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly ITokenService _tokenService;
+    private readonly JwtSettings _jwtSettings;
 
-    public AuthController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager,
-        IConfiguration configuration, ITokenService tokenService)
+
+    public AuthController(
+        UserManager<User> userManager,
+        ITokenService tokenService,
+        IOptions<JwtSettings> jwtSettings)
     {
         _userManager = userManager;
-        _roleManager = roleManager;
         _tokenService = tokenService;
+        _jwtSettings = jwtSettings.Value;
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+    public async Task<IActionResult> Register(RegisterDto dto)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         var user = new User
         {
             UserName = dto.Email,
             Email = dto.Email,
-            FirstName = dto.FirstName ?? string.Empty,
-            LastName = dto.LastName ?? string.Empty
+            FirstName = dto.FirstName,
+            LastName = dto.LastName
         };
 
         var result = await _userManager.CreateAsync(user, dto.Password);
+        if (!result.Succeeded)
+            return BadRequest(result.Errors);
 
-        var role = dto.UserRole switch
+        var role = dto.UserRole?.ToLower() switch
         {
-            "Admin" => "Admin",
-            "Worker" => "Worker",
-            _ => "User"
+            "admin" => UserRole.Admin,
+            "worker" => UserRole.Worker,
+            _ => UserRole.User
         };
 
-        if (!await _roleManager.RoleExistsAsync(role))
-            await _roleManager.CreateAsync(new IdentityRole(role));
+        var roleName = role.ToString();
 
-        await _userManager.AddToRoleAsync(user, role);
+        // Создаём роль, если её нет
+        if (!await _userManager.IsInRoleAsync(user, roleName))
+            await _userManager.AddToRoleAsync(user, roleName);
+
+        // Назначаем роль
+        await _userManager.AddToRoleAsync(user, roleName);
+        
+        // Перечитываем пользователя
+        user = await _userManager.FindByIdAsync(user.Id); // или FindByEmailAsync
+        var roles = await _userManager.GetRolesAsync(user); // теперь роли будут
+        Console.WriteLine($"Roles: {string.Join(", ", roles)}"); //  Проверь вывод
 
         return Ok(new { Message = "User registered successfully" });
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto dto)
+    public async Task<IActionResult> Login(LoginDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
         if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
             return Unauthorized(new AuthResponseDto
-                { IsSuccess = false, Errors = new[] { "Invalid email or password" } });
+            {
+                IsSuccess = false,
+                Errors = new List<string> { "Invalid email or password" }
+            });
 
         var roles = await _userManager.GetRolesAsync(user);
         var token = _tokenService.GenerateJwtToken(user, roles);
         var refreshToken = _tokenService.GenerateRefreshToken();
 
         user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
         await _userManager.UpdateAsync(user);
+        
 
         return Ok(new AuthResponseDto
         {
@@ -75,7 +99,7 @@ public class AuthController : ControllerBase
             IsSuccess = true
         });
     }
-    
+
     [Authorize]
     [HttpGet("me")]
     public IActionResult GetCurrentUser()
@@ -87,9 +111,9 @@ public class AuthController : ControllerBase
 
         return Ok(new { userId, email, name, roles });
     }
-    
+
     [HttpGet("debug")]
-    [Authorize]
+   
     public IActionResult DebugClaims()
     {
         return Ok(new

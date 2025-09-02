@@ -26,7 +26,6 @@ public class TokenService : ITokenService
 
             var claims = new List<Claim>
             {
-                new(JwtRegisteredClaimNames.Sub, user.Email),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(ClaimTypes.NameIdentifier, user.Id),
                 new(ClaimTypes.Email, user.Email),
@@ -35,29 +34,14 @@ public class TokenService : ITokenService
 
             claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
-            // var token = new JwtSecurityToken(
-            //     issuer:  _jwtSettings.Issuer,
-            //     audience: _jwtSettings.Audience,
-            //     claims: claims,
-            //     expires: DateTime.Now.AddDays(7),
-            //     signingCredentials: credentials);
+             var token = new JwtSecurityToken(
+                 issuer:  _jwtSettings.Issuer,
+                 audience: _jwtSettings.Audience,
+                 claims: claims,
+                 expires: DateTime.Now.AddMinutes(_jwtSettings.AccessTokenExpirationMinutes),
+                 signingCredentials: credentials);
             
-            //return new JwtSecurityTokenHandler().WriteToken(token);
-            
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(7),
-                SigningCredentials = credentials,
-                Issuer = _jwtSettings.Issuer,
-                Audience = _jwtSettings.Audience
-            };
-            
-            var tokenHandler = new JwtSecurityTokenHandler();
-        
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-        
-            return tokenHandler.WriteToken(token);
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         public string GenerateRefreshToken()
@@ -66,5 +50,28 @@ public class TokenService : ITokenService
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
+        }
+        
+        public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key)),
+                ValidateLifetime = false
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            try
+            {
+                var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out _);
+                return principal;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
