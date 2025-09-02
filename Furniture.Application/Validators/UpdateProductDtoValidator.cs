@@ -15,8 +15,6 @@ public class UpdateProductDtoValidator: AbstractValidator<UpdateProductDto>
             .MaximumLength(2000).WithMessage("Description must not exceed 2000 characters.");
         RuleFor(x => x.Category)
             .NotEmpty().WithMessage("Category is required.");
-        RuleFor(x => x.Color)
-            .MaximumLength(30).WithMessage("Color must not exceed 30 characters.");
         RuleFor(x => x.Material)
             .MaximumLength(50).WithMessage("Material must not exceed 50 characters.");
         RuleFor(x => x.Price)

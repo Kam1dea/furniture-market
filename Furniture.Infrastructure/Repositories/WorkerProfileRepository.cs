@@ -28,6 +28,13 @@ public class WorkerProfileRepository: IWorkerProfileRepository
         return workerProfile;
     }
 
+    public async Task<WorkerProfile?> GetByWorkerIdAsync(string workerId, CancellationToken ct = default)
+    {
+        return await _context.WorkerProfiles
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.WorkerId == workerId, ct);
+    }
+
     // public async Task<WorkerProfile> GetOwnAsync(string id)
     // {
     //     

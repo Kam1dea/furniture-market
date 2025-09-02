@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Furniture.Infrastructure.Repositories;
 
-public class ProductRepository: IProductRepository
+public class ProductRepository : IProductRepository
 {
     private readonly ApplicationDbContext _context;
 
@@ -14,53 +14,44 @@ public class ProductRepository: IProductRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Product>> GetAllAsync()
+
+    public async Task<Product?> GetByIdAsync(int id, CancellationToken ct = default)
     {
-        var products = _context.Products.AsNoTracking().ToListAsync();
-        
-        return await products;
+        return await _context.Products
+            .Include(p => p.WorkerProfile!.Worker)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == id, ct);
     }
 
-    public async Task<Product?> GetByIdAsync(int id)
+    public async Task<IEnumerable<Product>> GetAllAsync(CancellationToken ct = default)
     {
-        var product  = _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
-        
-        return await product;
+        return await _context.Products
+            .Include(p => p.WorkerProfile!.Worker)
+            .AsNoTracking()
+            .ToListAsync(ct);
     }
 
-    public async Task<Product?> CreateAsync(Product product)
+    public async Task<IEnumerable<Product>> GetByWorkerProfileIdAsync(int workerProfileId, CancellationToken ct = default)
     {
-        await _context.Products.AddAsync(product);
-        await _context.SaveChangesAsync();
-        return product;
+        return await _context.Products
+            .Where(p => p.WorkerProfileId == workerProfileId)
+            .Include(p => p.WorkerProfile.Worker)
+            .AsNoTracking()
+            .ToListAsync(ct);
     }
 
-    public async Task<Product?> UpdateAsync(int id, Product product)
+    public async Task AddAsync(Product product, CancellationToken ct = default)
     {
-        var existingProduct = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
-
-        if (existingProduct == null)
-        {
-            return null;
-        }
-        
-        _context.Entry(existingProduct).CurrentValues.SetValues(product);
-        await _context.SaveChangesAsync();
-        
-        return existingProduct;
+        await _context.Products.AddAsync(product, ct);
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task UpdateAsync(Product product, CancellationToken ct = default)
     {
-        var existingProduct = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+        _context.Products.Update(product);
+    }
 
-        if (existingProduct == null)
-        {
-            return false;
-        }
-        
-        _context.Products.Remove(existingProduct);
-        await _context.SaveChangesAsync();
-        return true;
+    public async Task DeleteAsync(Product product, CancellationToken ct = default)
+    {
+        _context.Products.Remove(product);
     }
 }

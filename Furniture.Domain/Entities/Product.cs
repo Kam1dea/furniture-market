@@ -13,6 +13,8 @@ public class Product
     public double Width { get; set; }
     public double Height { get; set; }
     public double Depth { get; set; }
+    public DateTime CreatedOn { get; set; } =  DateTime.UtcNow;
+    public DateTime ModifiedOn { get; set; }
 
     public int WorkerProfileId { get; set; }
     public WorkerProfile? WorkerProfile { get; set; }

@@ -6,6 +6,7 @@ public interface IWorkerProfileRepository
 {
     Task <IEnumerable<WorkerProfile>> GetAllAsync();
     Task<WorkerProfile?> GetByIdAsync(int id);
+    Task<WorkerProfile?> GetByWorkerIdAsync(string workerId, CancellationToken ct = default);
     //Task<WorkerProfile> GetOwnAsync();
     Task<WorkerProfile> CreateAsync(WorkerProfile workerProfile);
     Task<WorkerProfile?> UpdateAsync(string id, WorkerProfile workerProfile);

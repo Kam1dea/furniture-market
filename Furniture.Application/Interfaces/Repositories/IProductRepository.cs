@@ -4,9 +4,10 @@ namespace Furniture.Application.Interfaces.Repositories;
 
 public interface IProductRepository
 {
-    Task<IEnumerable<Product>> GetAllAsync();
-    Task<Product?> GetByIdAsync(int id);
-    Task<Product?> CreateAsync(Product product);
-    Task<Product?> UpdateAsync(int id, Product product);
-    Task<bool> DeleteAsync(int id);
+    Task<Product?> GetByIdAsync(int id, CancellationToken ct = default);
+    Task<IEnumerable<Product>> GetAllAsync(CancellationToken ct = default);
+    Task<IEnumerable<Product>> GetByWorkerProfileIdAsync(int workerProfileId, CancellationToken ct = default);
+    Task AddAsync(Product product, CancellationToken ct = default);
+    Task UpdateAsync(Product product, CancellationToken ct = default);
+    Task DeleteAsync(Product product, CancellationToken ct = default);
 }

@@ -84,11 +84,9 @@ public class ReviewService: IReviewService
         var review = await _reviewRepository.GetByIdAsync(id, ct)
                      ?? throw new NotFoundException($"Review with ID {id} not found.");
 
-        // Проверяем: это его отзыв?
         if (review.UserId != userId)
             throw new UnauthorizedAccessException("You can only update your own reviews.");
 
-        // Обновляем поля
         review.Tittle = dto.Tittle;
         review.Content = dto.Content;
         review.Rating = dto.Rating;

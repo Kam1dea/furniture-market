@@ -1,9 +1,9 @@
-using System.Security.Claims;
-using AutoMapper;
 using Furniture.Application.Dtos.Product;
 using Furniture.Application.Exceptions;
 using Furniture.Application.Interfaces.Repositories;
+using Furniture.Application.Interfaces.Services;
 using Furniture.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,70 +13,82 @@ namespace Furniture.WebApi.Controllers;
 [Route("api/[controller]")]
 public class ProductController : ControllerBase
 {
-    private readonly IProductRepository _productRepository;
-    private readonly IMapper _mapper;
-    private UserManager<User> _userManager;
+    private readonly IProductService  _productService;
 
-    public ProductController(IProductRepository productRepository, IMapper mapper, UserManager<User> userManager)
+    public ProductController(IProductService productService)
     {
-        _productRepository = productRepository;
-        _mapper = mapper;
-        _userManager = userManager;
+        _productService = productService;
     }
 
+    /// <summary>
+    /// Получить все товары
+    /// </summary>
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync()
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<ProductDto>>> GetAll()
     {
-        var products = await _productRepository.GetAllAsync();
-        return Ok(_mapper.Map<IEnumerable<Product>>(products));
+        var products = await _productService.GetAllAsync();
+        return Ok(products);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
+    /// <summary>
+    /// Получить товар по ID
+    /// </summary>
+    [HttpGet("{id:int}")]
+    [AllowAnonymous]
+    public async Task<ActionResult<ProductDto>> GetById(int id)
     {
-        var product = await _productRepository.GetByIdAsync(id);
-
-        if (product == null)
-        {
-            throw new NotFoundException($"Product with ID {id} not found.");
-        }
-
-        return Ok(_mapper.Map<Product>(product));
+        var product = await _productService.GetByIdAsync(id);
+        return Ok(product);
+    }
+    
+    /// <summary>
+    /// Получить товары текущего работника
+    /// </summary>
+    [HttpGet("my")]
+    [Authorize(Roles = "Worker")]
+    public async Task<ActionResult<IEnumerable<ProductDto>>> GetMyProducts()
+    {
+        var products = await _productService.GetMyProductsAsync();
+        return Ok(products);
     }
 
+    /// <summary>
+    /// Создать новый товар (только Worker)
+    /// </summary>
     [HttpPost]
-    public async Task<IActionResult> CreateAsync([FromBody] CreateProductDto product)
+    [Authorize(Roles = "Worker")]
+    public async Task<ActionResult<ProductDto>> Create(CreateProductDto dto)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var user = await _userManager.FindByIdAsync(userId);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
         
-        var productEntity = _mapper.Map<Product>(product);
-        product.WorkerProfileId = user.WorkerProfile.Id;
-        await _productRepository.CreateAsync(productEntity);
-        return Ok(_mapper.Map<ProductDto>(productEntity));
+        var product = await _productService.CreateProductAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
     }
 
-    [HttpPut]
-    [Route("{id:int}")]
-    public async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody] UpdateProductDto product)
+    /// <summary>
+    /// Обновить товар (только владелец)
+    /// </summary>
+    [HttpPut("{id:int}")]
+    [Authorize(Roles = "Worker")]
+    public async Task<ActionResult<ProductDto>> Update(int id, UpdateProductDto dto)
     {
-        var productEntity = await _productRepository.GetByIdAsync(id);
-        if (productEntity == null)
-        {
-            throw new NotFoundException($"Product with ID {id} not found.");
-        }
-        _mapper.Map(product, productEntity);
-        await _productRepository.UpdateAsync(id, productEntity);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
         
-        return Ok(_mapper.Map<ProductDto>(productEntity));
+        await _productService.UpdateProductAsync(id, dto);
+        return NoContent();
     }
 
-    [HttpDelete]
-    [Route("{id:int}")]
-    public async Task<IActionResult> DeleteAsync([FromRoute] int id)
+    /// <summary>
+    /// Удалить товар (только владелец)
+    /// </summary>
+    [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Worker")]
+    public async Task<ActionResult> Delete(int id)
     {
-        await _productRepository.DeleteAsync(id);
-
+        await _productService.DeleteProductAsync(id);
         return NoContent();
     }
 }
