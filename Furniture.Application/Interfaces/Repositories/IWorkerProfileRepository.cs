@@ -4,11 +4,10 @@ namespace Furniture.Application.Interfaces.Repositories;
 
 public interface IWorkerProfileRepository
 {
-    Task <IEnumerable<WorkerProfile>> GetAllAsync();
-    Task<WorkerProfile?> GetByIdAsync(int id);
+    Task <IEnumerable<WorkerProfile>> GetAllAsync(CancellationToken ct = default);
+    Task<WorkerProfile?> GetByIdAsync(int id, CancellationToken ct = default);
     Task<WorkerProfile?> GetByWorkerIdAsync(string workerId, CancellationToken ct = default);
-    //Task<WorkerProfile> GetOwnAsync();
-    Task<WorkerProfile> CreateAsync(WorkerProfile workerProfile);
-    Task<WorkerProfile?> UpdateAsync(string id, WorkerProfile workerProfile);
-    Task<bool> IsExistingAsync(string id);
+    Task AddAsync(WorkerProfile workerProfile, CancellationToken ct = default);
+    Task UpdateAsync(WorkerProfile workerProfile, CancellationToken ct = default);
+    Task<bool> IsExistingAsync(string workerId, CancellationToken ct = default);
 }

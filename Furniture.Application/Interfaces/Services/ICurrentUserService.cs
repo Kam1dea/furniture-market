@@ -5,4 +5,5 @@ public interface ICurrentUserService
     string? UserId { get; }
     bool IsAuthenticated { get; }
     string? Email { get; }
+    string? Name { get; }
 }

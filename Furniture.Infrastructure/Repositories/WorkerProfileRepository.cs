@@ -14,56 +14,57 @@ public class WorkerProfileRepository: IWorkerProfileRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<WorkerProfile>> GetAllAsync()
+
+    public async Task<IEnumerable<WorkerProfile>> GetAllAsync(CancellationToken ct = default)
     {
-        var workerProfiles = await _context.WorkerProfiles.AsNoTracking().ToListAsync();
-        
-        return workerProfiles;
+        return await _context.WorkerProfiles
+            .Include(wp => wp.Worker)
+            .Include(wp => wp.Products)
+            .Include(wp => wp.Reviews)
+            .ThenInclude(r => r.User)
+            .AsNoTracking()
+            .ToListAsync(ct);
     }
 
-    public async Task<WorkerProfile?> GetByIdAsync(int id)
+    public async Task<WorkerProfile?> GetByIdAsync(int id, CancellationToken ct = default)
     {
-        var workerProfile = await _context.WorkerProfiles.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-        
-        return workerProfile;
+        return await _context.WorkerProfiles
+            .Include(wp => wp.Worker)
+            .Include(wp => wp.Products)
+            .Include(wp => wp.Reviews)
+            .ThenInclude(r => r.User)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(wp => wp.Id == id, ct);
+            
     }
 
     public async Task<WorkerProfile?> GetByWorkerIdAsync(string workerId, CancellationToken ct = default)
     {
         return await _context.WorkerProfiles
+            .Include(wp => wp.Worker)
+            .Include(wp => wp.Products)
+            .Include(wp => wp.Reviews)
+            .ThenInclude(r => r.User)
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.WorkerId == workerId, ct);
+            .FirstOrDefaultAsync(wp => wp.WorkerId == workerId, ct);
     }
 
-    // public async Task<WorkerProfile> GetOwnAsync(string id)
-    // {
-    //     
-    // }
-
-    public async Task<WorkerProfile> CreateAsync(WorkerProfile workerProfile)
+    public async Task AddAsync(WorkerProfile workerProfile, CancellationToken ct = default)
     {
-        await _context.WorkerProfiles.AddAsync(workerProfile);
-        await _context.SaveChangesAsync();
-        return workerProfile;
+        await _context.WorkerProfiles.AddAsync(workerProfile, ct);
     }
 
-    public async Task<WorkerProfile?> UpdateAsync(string id, WorkerProfile workerProfile)
+    public async Task UpdateAsync(WorkerProfile workerProfile, CancellationToken ct = default)
     {
-        var existingWorkerProfile = await _context.WorkerProfiles.FirstOrDefaultAsync(p => p.Id == workerProfile.Id);
-        
-        if (existingWorkerProfile == null)
-            return null;
-        
-        _context.Entry(existingWorkerProfile).CurrentValues.SetValues(workerProfile);
-        await _context.SaveChangesAsync();
-        
-        return workerProfile;
+        _context.WorkerProfiles.Update(workerProfile);
     }
 
-    public async Task<bool> IsExistingAsync(string id)
+    public async Task<bool> IsExistingAsync(string workerId, CancellationToken ct = default)
     {
-        if (await _context.WorkerProfiles.AnyAsync(p => p.WorkerId == id))
-            return true;
-        return false;
+        var existing = await _context.WorkerProfiles
+            .Where(wp => wp.WorkerId == workerId)
+            .AnyAsync(ct);
+        
+        return existing;
     }
 }

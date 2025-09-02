@@ -3,7 +3,9 @@ using AutoMapper;
 using Furniture.Application.Dtos.WorkerProfile;
 using Furniture.Application.Exceptions;
 using Furniture.Application.Interfaces.Repositories;
+using Furniture.Application.Interfaces.Services;
 using Furniture.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,59 +16,76 @@ namespace Furniture.WebApi.Controllers;
 
 public class WorkerProfileController: ControllerBase
 {
-    private readonly IWorkerProfileRepository _workerProfileRepository;
-    private readonly IMapper _mapper;
-    private readonly UserManager<User> _userManager;
+    private readonly IWorkerProfileService _workerProfileService;
 
-    public WorkerProfileController(IWorkerProfileRepository workerProfileRepository, IMapper mapper, UserManager<User> userManager)
+    public WorkerProfileController(IWorkerProfileService workerProfileService)
     {
-        _workerProfileRepository = workerProfileRepository;
-        _mapper = mapper;
-        _userManager = userManager;
+        _workerProfileService = workerProfileService;
     }
 
+    /// <summary>
+    /// Получить все профили
+    /// </summary>
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync()
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<WorkerProfileDto>>> GetAll()
     {
-        var workerProfiles = await _workerProfileRepository.GetAllAsync();
-        return Ok(_mapper.Map<IEnumerable<WorkerProfileDto>>(workerProfiles));
+        var profiles =  await _workerProfileService.GetAllAsync();
+        
+        return Ok(profiles);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync([FromRoute]int id)
+    /// <summary>
+    /// Получить свой профиль (Worker)
+    /// </summary>
+    [HttpGet("my")]
+    [Authorize(Roles = "Worker")]
+    public async Task<ActionResult<WorkerProfileDto>> GetMyProfile()
     {
-        var workerProfile = await _workerProfileRepository.GetByIdAsync(id);
+        var profile = await _workerProfileService.GetMyProfileAsync();
         
-        if (workerProfile == null)
-            throw new NotFoundException($"WorkerProfile with ID {id} not found");
-        
-        return Ok(_mapper.Map<WorkerProfileDto>(workerProfile));
+        return Ok(profile);
     }
 
+    /// <summary>
+    /// Получить профиль по ID
+    /// </summary>
+    [HttpGet("{id:int}")]
+    [AllowAnonymous]
+    public async Task<ActionResult<WorkerProfileDto>> GetById(int id)
+    {
+        var profile = await _workerProfileService.GetByWorkerIdAsync(id);
+        
+        return Ok(profile);
+    }
+
+    /// <summary>
+    /// Создать профиль (только Worker, один раз)
+    /// </summary>
     [HttpPost]
-    public async Task<IActionResult> CreateAsync([FromBody]CreateWorkerProfileDto workerProfileDto)
+    [Authorize(Roles = "Worker")]
+    public async Task<ActionResult<WorkerProfileDto>> Create(CreateWorkerProfileDto dto)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (_workerProfileRepository.IsExistingAsync(userId!).Result)
-            return BadRequest("You already have profile");
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var profile = await _workerProfileService.CreateProfileAsync(dto);
         
-        var workerProfile = _mapper.Map<WorkerProfile>(workerProfileDto);
-        workerProfile.WorkerId = userId;
-        
-        await _workerProfileRepository.CreateAsync(workerProfile);
-        return Ok(_mapper.Map<WorkerProfileDto>(workerProfile));
+        return CreatedAtAction(nameof(GetById), new { id = profile.Id }, profile);
     }
 
+    /// <summary>
+    /// Обновить свой профиль
+    /// </summary>
     [HttpPut]
-    public async Task<IActionResult> UpdateAsync([FromBody] UpdateWorkerProfileDto workerProfileDto)
+    [Authorize(Roles = "Worker")]
+    public async Task<ActionResult<WorkerProfileDto>> Update(UpdateWorkerProfileDto dto)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (!_workerProfileRepository.IsExistingAsync(userId!).Result)
-            return BadRequest("You don't have profile");
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
         
-        var workerProfileEntity = _mapper.Map<WorkerProfile>(workerProfileDto);
-        await _workerProfileRepository.UpdateAsync(userId!, workerProfileEntity);
+        var profile = await _workerProfileService.UpdateProfileAsync(dto);
         
-        return Ok(_mapper.Map<WorkerProfileDto>(workerProfileEntity));
+        return Ok(profile);
     }
 }
