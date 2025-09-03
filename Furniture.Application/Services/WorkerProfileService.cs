@@ -55,7 +55,7 @@ public class WorkerProfileService:  IWorkerProfileService
                        ?? throw new UnauthorizedAccessException("User is not authenticated");
 
         var existing = await _workerProfileRepository.IsExistingAsync(workerId, ct);
-        if (!existing)
+        if (existing)
             throw new InvalidOperationException("You already have a worker profile.");
 
         var profile = new WorkerProfile

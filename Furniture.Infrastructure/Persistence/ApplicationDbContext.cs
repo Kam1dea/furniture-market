@@ -12,9 +12,10 @@ public class ApplicationDbContext : IdentityDbContext<User>
     }
 
     public DbSet<Product> Products { get; set; }
-    public DbSet<ProductImage> FurnitureImages { get; set; }
+    public DbSet<ProductImage> ProductImages { get; set; }
     public DbSet<Review> Reviews { get; set; }
     public DbSet<ReviewImage> ReviewImages { get; set; }
+    
     public DbSet<WorkerProfile> WorkerProfiles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)

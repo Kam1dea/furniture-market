@@ -10,8 +10,10 @@ public class ProductProfile: Profile
     {
         CreateMap<Product, ProductDto>().ReverseMap();
 
-        CreateMap<CreateProductDto, Product>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore());
+        CreateMap<CreateProductWithImageDto, Product>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(_ => DateTime.UtcNow))
+            .ForMember(dest => dest.WorkerProfileId, opt => opt.Ignore());
         
         CreateMap<UpdateProductDto, Product>()
             .ForMember(dest => dest.Id, opt => opt.Ignore());

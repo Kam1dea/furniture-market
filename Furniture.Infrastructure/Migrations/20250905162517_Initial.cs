@@ -33,7 +33,6 @@ namespace Furniture.Infrastructure.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     FirstName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     LastName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    UserRole = table.Column<string>(type: "text", nullable: false),
                     RefreshToken = table.Column<string>(type: "text", nullable: true),
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -168,9 +167,12 @@ namespace Furniture.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    Location = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    Location = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     Rating = table.Column<double>(type: "double precision", precision: 3, scale: 2, nullable: false, defaultValue: 0.0),
+                    TotalReviews = table.Column<int>(type: "integer", nullable: false),
                     WorkerId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -191,14 +193,17 @@ namespace Furniture.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
+                    Description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
                     Category = table.Column<string>(type: "text", nullable: false),
-                    Color = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true),
-                    Material = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    Color = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    Material = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     Width = table.Column<double>(type: "numeric(18,2)", nullable: false),
                     Height = table.Column<double>(type: "numeric(18,2)", nullable: false),
                     Depth = table.Column<double>(type: "numeric(18,2)", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    WorkerName = table.Column<string>(type: "text", nullable: false),
                     WorkerProfileId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -213,7 +218,7 @@ namespace Furniture.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FurnitureImages",
+                name: "ProductImages",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -224,9 +229,9 @@ namespace Furniture.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FurnitureImages", x => x.Id);
+                    table.PrimaryKey("PK_ProductImages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FurnitureImages_Products_ProductId",
+                        name: "FK_ProductImages_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
@@ -240,11 +245,13 @@ namespace Furniture.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Rating = table.Column<int>(type: "integer", nullable: false, defaultValue: 5),
-                    Tittle = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    Tittle = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Content = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: true),
-                    ProductId = table.Column<int>(type: "integer", nullable: false),
-                    WorkerProfileId = table.Column<int>(type: "integer", nullable: false)
+                    ProductId = table.Column<int>(type: "integer", nullable: true),
+                    WorkerProfileId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -265,8 +272,7 @@ namespace Furniture.Infrastructure.Migrations
                         name: "FK_Reviews_WorkerProfiles_WorkerProfileId",
                         column: x => x.WorkerProfileId,
                         principalTable: "WorkerProfiles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -332,8 +338,8 @@ namespace Furniture.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_FurnitureImages_ProductId",
-                table: "FurnitureImages",
+                name: "IX_ProductImages_ProductId",
+                table: "ProductImages",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
@@ -387,7 +393,7 @@ namespace Furniture.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "FurnitureImages");
+                name: "ProductImages");
 
             migrationBuilder.DropTable(
                 name: "ReviewImages");

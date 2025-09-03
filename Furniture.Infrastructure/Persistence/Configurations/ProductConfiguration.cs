@@ -24,9 +24,5 @@ public class ProductConfiguration: IEntityTypeConfiguration<Product>
             .WithMany(wp => wp.Products)
             .HasForeignKey(p => p.WorkerProfileId)
             .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasMany(p => p.ProductImages)
-            .WithOne(i => i.Product)
-            .HasForeignKey(i => i.ProductId);
     }
 }

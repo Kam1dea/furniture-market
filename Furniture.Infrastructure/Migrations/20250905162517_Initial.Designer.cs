@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Furniture.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250811172356_Initial")]
+    [Migration("20250905162517_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -38,13 +38,18 @@ namespace Furniture.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Color")
+                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<double>("Depth")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
 
@@ -52,8 +57,12 @@ namespace Furniture.Infrastructure.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Material")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -65,6 +74,10 @@ namespace Furniture.Infrastructure.Migrations
 
                     b.Property<double>("Width")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("WorkerName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("WorkerProfileId")
                         .HasColumnType("integer");
@@ -99,7 +112,7 @@ namespace Furniture.Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("FurnitureImages");
+                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("Furniture.Domain.Entities.Review", b =>
@@ -115,7 +128,13 @@ namespace Furniture.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<int>("ProductId")
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("ProductId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Rating")
@@ -124,13 +143,14 @@ namespace Furniture.Infrastructure.Migrations
                         .HasDefaultValue(5);
 
                     b.Property<string>("Tittle")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
                     b.Property<string>("UserId")
                         .HasColumnType("text");
 
-                    b.Property<int>("WorkerProfileId")
+                    b.Property<int?>("WorkerProfileId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -238,10 +258,6 @@ namespace Furniture.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("UserRole")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -266,18 +282,31 @@ namespace Furniture.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Location")
+                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<double>("Rating")
                         .ValueGeneratedOnAdd()
                         .HasPrecision(3, 2)
                         .HasColumnType("double precision")
                         .HasDefaultValue(0.0);
+
+                    b.Property<int>("TotalReviews")
+                        .HasColumnType("integer");
 
                     b.Property<string>("WorkerId")
                         .HasColumnType("text");
@@ -449,24 +478,19 @@ namespace Furniture.Infrastructure.Migrations
                     b.HasOne("Furniture.Domain.Entities.Product", "Product")
                         .WithMany("Reviews")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Furniture.Domain.Entities.User", "User")
                         .WithMany("Reviews")
                         .HasForeignKey("UserId");
 
-                    b.HasOne("Furniture.Domain.Entities.WorkerProfile", "WorkerProfile")
+                    b.HasOne("Furniture.Domain.Entities.WorkerProfile", null)
                         .WithMany("Reviews")
-                        .HasForeignKey("WorkerProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("WorkerProfileId");
 
                     b.Navigation("Product");
 
                     b.Navigation("User");
-
-                    b.Navigation("WorkerProfile");
                 });
 
             modelBuilder.Entity("Furniture.Domain.Entities.ReviewImage", b =>

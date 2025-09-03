@@ -1,6 +1,7 @@
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
+using Furniture.WebApi.Filters;
 
 public static class SwaggerConfiguration
 {
@@ -47,6 +48,8 @@ public static class SwaggerConfiguration
                     Array.Empty<string>() // Пусто — значит, нет дополнительных scopes
                 }
             });
+            
+            options.OperationFilter<UploadOpereationFilter>();
         });
     }
 }

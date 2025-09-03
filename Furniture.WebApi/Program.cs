@@ -15,6 +15,7 @@ using Furniture.WebApi.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -88,6 +89,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// разрешаем статические файлы
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

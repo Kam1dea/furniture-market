@@ -26,4 +26,8 @@
       <ProjectReference Include="..\Furniture.Infrastructure\Furniture.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="wwwroot\uploads\products\" />
+    </ItemGroup>
+
 </Project>

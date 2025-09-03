@@ -54,11 +54,22 @@ public class ProductController : ControllerBase
     }
 
     /// <summary>
+    /// Получить товары по ID профиля работника
+    /// </summary>
+    [HttpGet("worker-profile/{id:int}")]
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<ProductDto>>> GetByWorkerProfileId(int id)
+    {
+        var products = await _productService.GetByWorkerProfileIdAsync(id);
+        return Ok(products);
+    }
+    
+    /// <summary>
     /// Создать новый товар (только Worker)
     /// </summary>
-    [HttpPost]
+    [HttpPost("create-with-image")]
     [Authorize(Roles = "Worker")]
-    public async Task<ActionResult<ProductDto>> Create(CreateProductDto dto)
+    public async Task<ActionResult<ProductDto>> Create([FromForm] CreateProductWithImageDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);

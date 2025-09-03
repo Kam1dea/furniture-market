@@ -29,7 +29,7 @@ public class TokenService : ITokenService
             {
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(ClaimTypes.NameIdentifier, user.Id),
-                new(ClaimTypes.Email, user.Email),
+                new(ClaimTypes.Email, user.Email??string.Empty),
                 new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}")
             };
 

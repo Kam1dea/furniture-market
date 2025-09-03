@@ -35,6 +35,7 @@ namespace Furniture.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Color")
+                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
 
@@ -45,6 +46,7 @@ namespace Furniture.Infrastructure.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
 
@@ -52,6 +54,7 @@ namespace Furniture.Infrastructure.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Material")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
@@ -68,6 +71,10 @@ namespace Furniture.Infrastructure.Migrations
 
                     b.Property<double>("Width")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("WorkerName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("WorkerProfileId")
                         .HasColumnType("integer");
@@ -102,7 +109,7 @@ namespace Furniture.Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("FurnitureImages");
+                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("Furniture.Domain.Entities.Review", b =>

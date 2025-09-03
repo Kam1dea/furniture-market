@@ -25,18 +25,21 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
         
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IImageService, ImageService>();
         
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         
         services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IProductImageRepository, ProductImageRepository>();
         services.AddScoped<IProductService, ProductService>();
         
         services.AddScoped<IReviewRepository, ReviewRepository>();
         services.AddScoped<IReviewService, ReviewService>();
         
         services.AddScoped<IWorkerProfileRepository, WorkerProfileRepository>();
+        services.AddScoped<IWorkerProfileService, WorkerProfileService>();
         
         
         return services;

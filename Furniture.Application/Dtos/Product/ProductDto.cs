@@ -1,3 +1,5 @@
+using Furniture.Domain.Entities;
+
 namespace Furniture.Application.Dtos.Product;
 
 public class ProductDto
@@ -15,5 +17,6 @@ public class ProductDto
     public string WorkerName { get; set; } = string.Empty;
     public DateTime CreatedOn { get; set; }
     public DateTime ModifiedOn { get; set; }
-    //public ICollection<ProductImage>? ProductImages { get; set; }
+    public List<string> ImageUrls { get; set; } = new();
+    public string? MainImageUrl { get; set; }
 }

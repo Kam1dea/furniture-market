@@ -19,6 +19,7 @@ public class ProductRepository : IProductRepository
     {
         return await _context.Products
             .Include(p => p.WorkerProfile!.Worker)
+            .Include(p => p.ProductImages)
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == id, ct);
     }
@@ -27,6 +28,7 @@ public class ProductRepository : IProductRepository
     {
         return await _context.Products
             .Include(p => p.WorkerProfile!.Worker)
+            .Include(p => p.ProductImages)
             .AsNoTracking()
             .ToListAsync(ct);
     }
@@ -34,8 +36,8 @@ public class ProductRepository : IProductRepository
     public async Task<IEnumerable<Product>> GetByWorkerProfileIdAsync(int workerProfileId, CancellationToken ct = default)
     {
         return await _context.Products
-            .Where(p => p.WorkerProfileId == workerProfileId)
-            .Include(p => p.WorkerProfile.Worker)
+            .Include(p => p.WorkerProfile!.Worker)
+            .Include(p => p.ProductImages)
             .AsNoTracking()
             .ToListAsync(ct);
     }
