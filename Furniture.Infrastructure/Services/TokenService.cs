@@ -5,6 +5,7 @@ using System.Text;
 using Furniture.Application.Interfaces.Services;
 using Furniture.Application.Services;
 using Furniture.Domain.Entities;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -66,12 +67,14 @@ public class TokenService : ITokenService
             var tokenHandler = new JwtSecurityTokenHandler();
             try
             {
-                var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out _);
-                return principal;
+                var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+                if (securityToken is JwtSecurityToken jwtSecurityToken && jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                    return principal;
             }
             catch
             {
                 return null;
             }
+            return null;
         }
     }

@@ -100,6 +100,39 @@ public class AuthController : ControllerBase
         });
     }
 
+    [HttpPost("refresh")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Refresh(RefreshTokenDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var principal = _tokenService.GetPrincipalFromExpiredToken(dto.Token);
+        if (principal == null)
+            return BadRequest("Invalid access token");
+        
+        var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            return BadRequest("Invalid access token");
+        
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null || user.RefreshToken != dto.RefreshToken ||  user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            return BadRequest("Invalid refresh token");
+        
+        var roles = await _userManager.GetRolesAsync(user);
+        var newToken = _tokenService.GenerateJwtToken(user, roles);
+        var newRefreshToken = _tokenService.GenerateRefreshToken();
+        user.RefreshToken = newRefreshToken;
+        await _userManager.UpdateAsync(user);
+
+        return Ok(new AuthResponseDto
+        {
+            Token = newToken,
+            RefreshToken = newRefreshToken,
+            IsSuccess = true
+        });
+    }
+
     [Authorize]
     [HttpGet("me")]
     public IActionResult GetCurrentUser()
@@ -111,29 +144,5 @@ public class AuthController : ControllerBase
 
         return Ok(new { userId, email, name, roles });
     }
-
-    [HttpGet("debug")]
-   
-    public IActionResult DebugClaims()
-    {
-        return Ok(new
-        {
-            IsAuthenticated = User.Identity.IsAuthenticated,
-            Name = User.Identity.Name, // берётся из ClaimTypes.Name
-            Claims = User.Claims.Select(c => new
-            {
-                Type = c.Type,
-                Value = c.Value,
-                // Покажем, как .NET интерпретирует тип
-                FriendlyType = c.Type switch
-                {
-                    "nameid" => "ClaimTypes.NameIdentifier",
-                    "email" => "ClaimTypes.Email",
-                    "name" => "ClaimTypes.Name",
-                    "role" => "ClaimTypes.Role",
-                    _ => c.Type
-                }
-            })
-        });
-    }
+    
 }
