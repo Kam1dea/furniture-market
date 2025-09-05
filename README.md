@@ -35,8 +35,7 @@ RESTful API для платформы по продаже мебели, где �
 - Пагинация и фильтрация: GET /products?page=1&size=10&category=chairs
 - Облачное хранилище: переход с локального хранения на Cloudinary или AWS S3
 
-- `![Swagger Screenshot](docs/swagger.png)` — скриншот Swagger
-- `## 📊 Скриншоты`
+`## 📊 Скриншоты`
 - <img width="1920" height="1032" alt="Снимок экрана 2025-09-05 210507" src="https://github.com/user-attachments/assets/891aad31-33e9-4ed3-847a-af879f6d3b87" />
 - <img width="1920" height="1032" alt="Снимок экрана 2025-09-05 210533" src="https://github.com/user-attachments/assets/28ad407a-2faf-4ea0-8777-41d4e4461fd5" />
 - <img width="1920" height="1032" alt="Снимок экрана 2025-09-05 210547" src="https://github.com/user-attachments/assets/550327f0-7e91-4ab4-ac1b-ed3c09c96850" />
