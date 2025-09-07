@@ -18,7 +18,8 @@ public class ProductService : IProductService
     private readonly IProductImageRepository _productImageRepository;
 
     public ProductService(IProductRepository productRepository, IMapper mapper, IUnitOfWork unitOfWork,
-        IWorkerProfileRepository workerProfileRepository, ICurrentUserService currentUserService, IImageService imageService, IProductImageRepository productImageRepository)
+        IWorkerProfileRepository workerProfileRepository, ICurrentUserService currentUserService,
+        IImageService imageService, IProductImageRepository productImageRepository)
     {
         _productRepository = productRepository;
         _mapper = mapper;
@@ -34,11 +35,11 @@ public class ProductService : IProductService
         var product = await _productRepository.GetByIdAsync(id, ct);
         if (product == null) return null;
 
-        var dto =  _mapper.Map<ProductDto>(product);
-        
+        var dto = _mapper.Map<ProductDto>(product);
+
         dto.ImageUrls = product.ProductImages.Select(i => i.Url!).ToList();
         dto.MainImageUrl = product.ProductImages.FirstOrDefault(i => i.IsMain)?.Url;
-        
+
         return dto;
     }
 
@@ -50,18 +51,19 @@ public class ProductService : IProductService
 
         foreach (var dto in dtos)
         {
-            var prodcut = products.FirstOrDefault(p => p.Id == dto.Id);
-            dto.ImageUrls = prodcut.ProductImages.Select(i => i.Url!).ToList();
-            dto.MainImageUrl = prodcut.ProductImages.FirstOrDefault(i => i.IsMain)?.Url;
+            var product = products.FirstOrDefault(p => p.Id == dto.Id);
+            dto.ImageUrls = product.ProductImages.Select(i => i.Url!).ToList();
+            dto.MainImageUrl = product.ProductImages.FirstOrDefault(i => i.IsMain)?.Url;
         }
 
         return dtos;
     }
 
-    public async Task<IEnumerable<ProductDto>> GetByWorkerProfileIdAsync(int workerProfileId, CancellationToken ct = default)
+    public async Task<IEnumerable<ProductDto>> GetByWorkerProfileIdAsync(int workerProfileId,
+        CancellationToken ct = default)
     {
         var products = await _productRepository.GetByWorkerProfileIdAsync(workerProfileId, ct);
-        
+
         var dtos = _mapper.Map<IEnumerable<ProductDto>>(products);
 
         foreach (var dto in dtos)
@@ -78,13 +80,13 @@ public class ProductService : IProductService
     {
         var workerId = _currentUserService.UserId
                        ?? throw new UnauthorizedAccessException("User is not authenticated");
-        
+
         var workerProfile = await _workerProfileRepository.GetByWorkerIdAsync(workerId, ct)
                             ?? throw new UnauthorizedAccessException(
                                 "You must have a worker profile to create products");
 
         var products = await _productRepository.GetByWorkerProfileIdAsync(workerProfile.Id, ct);
-        
+
         var dtos = _mapper.Map<IEnumerable<ProductDto>>(products);
 
         foreach (var dto in dtos)
@@ -125,7 +127,7 @@ public class ProductService : IProductService
                 IsMain = index == 0,
                 ProductId = product.Id,
             }).ToList();
-            
+
             await _productImageRepository.AddRangeAsync(images, ct);
             await _unitOfWork.SaveAsync(ct);
         }
@@ -135,7 +137,7 @@ public class ProductService : IProductService
 
     public async Task<ProductDto> UpdateProductAsync(int id, UpdateProductDto dto, CancellationToken ct = default)
     {
-        var workerId = _currentUserService.UserId 
+        var workerId = _currentUserService.UserId
                        ?? throw new UnauthorizedAccessException("User is not authenticated");
 
         var product = await _productRepository.GetByIdAsync(id, ct)
@@ -154,9 +156,9 @@ public class ProductService : IProductService
 
     public async Task DeleteProductAsync(int id, CancellationToken ct = default)
     {
-        var workerId = _currentUserService.UserId 
+        var workerId = _currentUserService.UserId
                        ?? throw new UnauthorizedAccessException("User is not authenticated");
-        
+
         var product = await _productRepository.GetByIdAsync(id, ct)
                       ?? throw new NotFoundException("Product not found");
 

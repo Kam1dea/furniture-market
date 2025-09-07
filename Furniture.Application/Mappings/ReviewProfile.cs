@@ -14,6 +14,9 @@ public class ReviewProfile: Profile
         CreateMap<CreateReviewDto, Review>()
             .ForMember(dest => dest.Id, opt => opt.Ignore());
         
+        CreateMap<CreateReviewWithImageDto, Review>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore());
+        
         CreateMap<UpdateReviewDto, Review>()
             .ForMember(dest => dest.Id, opt => opt.Ignore());
     }

@@ -172,6 +172,9 @@ namespace Furniture.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("IsMain")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("ReviewId")
                         .HasColumnType("integer");
 

@@ -58,15 +58,15 @@ public class ReviewController: ControllerBase
     /// <summary>
     /// Создать новый отзыв
     /// </summary>
-    [HttpPost]
+    [HttpPost("create-with-images")]
     [Authorize]
-    public async Task<ActionResult<int>> Create(CreateReviewDto dto)
+    public async Task<ActionResult<int>> Create([FromForm] CreateReviewWithImageDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
         
-        var reviewId = await _reviewService.CreateReviewAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id = reviewId }, reviewId);
+        var review = await _reviewService.CreateReviewAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = review.Id }, review);
     }
 
     /// <summary>

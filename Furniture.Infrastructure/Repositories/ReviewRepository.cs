@@ -20,6 +20,7 @@ public class ReviewRepository : IReviewRepository
         return await _context.Reviews
             .Include(r => r.User)
             .Include(r => r.Product)
+            .Include(r => r.ReviewImages)
             .AsNoTracking()
             .FirstOrDefaultAsync(r => r.Id == id, ct);
     }
@@ -29,6 +30,7 @@ public class ReviewRepository : IReviewRepository
         return await _context.Reviews
             .Include(r => r.User)
             .Include(r => r.Product)
+            .Include(r => r.ReviewImages)
             .AsNoTracking()
             .ToListAsync(ct);
     }
@@ -38,6 +40,7 @@ public class ReviewRepository : IReviewRepository
         return await _context.Reviews
             .Where(r => r.ProductId == productId)
             .Include(r => r.User)
+            .Include(r => r.ReviewImages)
             .OrderByDescending(r => r.CreatedOn)
             .ToListAsync(ct);
     }
@@ -47,6 +50,7 @@ public class ReviewRepository : IReviewRepository
         return await _context.Reviews
             .Where(r => r.UserId == userId)
             .Include(r => r.Product)
+            .Include(r => r.ReviewImages)
             .OrderByDescending(r => r.CreatedOn)
             .ToListAsync(ct);
     }
@@ -64,11 +68,6 @@ public class ReviewRepository : IReviewRepository
     public async Task DeleteAsync(Review review, CancellationToken ct = default)
     {
         _context.Reviews.Remove(review);
-    }
-
-    public async Task SaveAsync(CancellationToken ct = default)
-    {
-        await _context.SaveChangesAsync(ct);
     }
 
     public async Task<bool> ExistsByUserAndProductAsync(string userId, int productId, CancellationToken ct = default)

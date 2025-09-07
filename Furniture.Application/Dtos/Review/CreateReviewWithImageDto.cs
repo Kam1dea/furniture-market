@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace Furniture.Application.Dtos.Review;
 
-public class CreateReviewDto
+public class CreateReviewWithImageDto
 {
     [Required]
     public int Rating { get; set; }
@@ -10,4 +11,5 @@ public class CreateReviewDto
     [Required]
     public string Content { get; set; } = string.Empty;
     public int ProductId { get; set; }
+    public List<IFormFile> Images { get; set; } = new ();
 }

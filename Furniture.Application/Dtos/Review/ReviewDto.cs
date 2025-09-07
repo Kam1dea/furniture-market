@@ -9,5 +9,7 @@ public class ReviewDto
     public DateTime CreatedOn { get; set; }
     public DateTime ModifiedOn { get; set; }
     public string UserName { get; set; } = string.Empty;
-    //public ICollection<ReviewImage>? ReviewImages { get; set; }
+
+    public List<string> ImagesUrls { get; set; } = new();
+    public string? MainImageUrl { get; set; }
 }
