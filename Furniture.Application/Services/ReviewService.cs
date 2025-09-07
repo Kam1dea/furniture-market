@@ -128,7 +128,7 @@ public class ReviewService: IReviewService
         return await GetByIdAsync(review.Id, ct);
     }
 
-    public async Task UpdateReviewAsync(int id, UpdateReviewDto dto, CancellationToken ct = default)
+    public async Task UpdateReviewAsync(int id, UpdateReviewWithImageDto dto, CancellationToken ct = default)
     {
         var userId = _currentUserService.UserId
                      ?? throw new UnauthorizedAccessException("User not authenticated");
@@ -146,6 +146,21 @@ public class ReviewService: IReviewService
 
         await _reviewRepository.UpdateAsync(review, ct);
         await _unitOfWork.SaveAsync(ct);
+        
+        if (dto.NewImages.Any())
+        {
+            var imageUrls = await _imageService.SaveReviewImageAsync(dto.NewImages, review.Id, ct);
+
+            var newImages = imageUrls.Select(url => new ReviewImage
+            {
+                Url = url,
+                IsMain = false,
+                ReviewId = review.Id
+            }).ToList();
+
+            _reviewImageRepository.AddRangeAsync(newImages);
+            await _unitOfWork.SaveAsync(ct);
+        }
     }
 
     public async Task DeleteReviewAsync(int id, CancellationToken ct = default)

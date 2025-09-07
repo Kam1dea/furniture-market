@@ -81,9 +81,9 @@ public class ProductController : ControllerBase
     /// <summary>
     /// Обновить товар (только владелец)
     /// </summary>
-    [HttpPut("{id:int}")]
+    [HttpPut("update-with-images/{id:int}")]
     [Authorize(Roles = "Worker")]
-    public async Task<ActionResult<ProductDto>> Update(int id, UpdateProductDto dto)
+    public async Task<ActionResult<ProductDto>> Update(int id, [FromForm] UpdateProductWithImageDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);

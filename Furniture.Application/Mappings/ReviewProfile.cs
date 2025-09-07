@@ -10,14 +10,11 @@ public class ReviewProfile: Profile
     {
         CreateMap<Review, ReviewDto>()
             .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.User.FirstName + " " + s.User.LastName));
-
-        CreateMap<CreateReviewDto, Review>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore());
         
         CreateMap<CreateReviewWithImageDto, Review>()
             .ForMember(dest => dest.Id, opt => opt.Ignore());
         
-        CreateMap<UpdateReviewDto, Review>()
+        CreateMap<UpdateReviewWithImageDto, Review>()
             .ForMember(dest => dest.Id, opt => opt.Ignore());
     }
 }

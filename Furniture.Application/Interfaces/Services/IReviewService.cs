@@ -11,6 +11,6 @@ public interface IReviewService
 
     Task<ReviewDto> CreateReviewAsync(CreateReviewWithImageDto dto, CancellationToken ct = default);
     
-    Task UpdateReviewAsync(int id, UpdateReviewDto dto, CancellationToken ct = default);
+    Task UpdateReviewAsync(int id, UpdateReviewWithImageDto dto, CancellationToken ct = default);
     Task DeleteReviewAsync(int id, CancellationToken ct = default);
 }

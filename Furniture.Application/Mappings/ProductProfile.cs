@@ -15,7 +15,7 @@ public class ProductProfile: Profile
             .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(_ => DateTime.UtcNow))
             .ForMember(dest => dest.WorkerProfileId, opt => opt.Ignore());
         
-        CreateMap<UpdateProductDto, Product>()
+        CreateMap<UpdateProductWithImageDto, Product>()
             .ForMember(dest => dest.Id, opt => opt.Ignore());
     }
 }

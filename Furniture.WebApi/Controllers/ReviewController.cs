@@ -72,9 +72,9 @@ public class ReviewController: ControllerBase
     /// <summary>
     /// Обновить свой отзыв
     /// </summary>
-    [HttpPut("{id:int}")]
+    [HttpPut("update-with-images/{id:int}")]
     [Authorize]
-    public async Task<ActionResult> Update(int id, UpdateReviewDto dto)
+    public async Task<ActionResult> Update(int id, [FromForm]UpdateReviewWithImageDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);

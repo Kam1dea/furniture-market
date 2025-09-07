@@ -3,7 +3,7 @@ using Furniture.Application.Dtos.Product;
 
 namespace Furniture.Application.Validators
 {
-    public class CreateProductDtoValidator : AbstractValidator<CreateProductDto>
+    public class CreateProductDtoValidator : AbstractValidator<CreateProductWithImageDto>
     {
         public CreateProductDtoValidator()
         {

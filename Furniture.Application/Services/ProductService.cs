@@ -135,7 +135,7 @@ public class ProductService : IProductService
         return _mapper.Map<ProductDto>(product);
     }
 
-    public async Task<ProductDto> UpdateProductAsync(int id, UpdateProductDto dto, CancellationToken ct = default)
+    public async Task<ProductDto> UpdateProductAsync(int id, UpdateProductWithImageDto dto, CancellationToken ct = default)
     {
         var workerId = _currentUserService.UserId
                        ?? throw new UnauthorizedAccessException("User is not authenticated");
@@ -150,6 +150,21 @@ public class ProductService : IProductService
         _mapper.Map(dto, product);
         _productRepository.UpdateAsync(product, ct);
         await _unitOfWork.SaveAsync(ct);
+        if (dto.NewImages.Any())
+        {
+            var imageUrls = await _imageService.SaveProductImageAsync(dto.NewImages, product.Id, ct);
+
+            var newImages = imageUrls.Select((url, index) => new ProductImage
+            {
+                Url = url,
+                IsMain = false, // не делаем главным автоматически
+                ProductId = product.Id
+            }).ToList();
+
+            await _productImageRepository.AddRangeAsync(newImages, ct);
+            await _unitOfWork.SaveAsync(ct);
+        }
+        
 
         return _mapper.Map<ProductDto>(product);
     }
