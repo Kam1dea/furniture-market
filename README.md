@@ -35,6 +35,7 @@ RESTful API для платформы по продаже мебели, где �
 - Облачное хранилище: переход с локального хранения на Cloudinary или AWS S3
 
 ## 📊 Скриншоты
-<img width="1920" height="1032" alt="Снимок экрана 2025-09-07 211723" src="https://github.com/user-attachments/assets/17e6eaee-ecb4-4563-9eae-a5a830d259ed" />
-<img width="1920" height="1032" alt="Снимок экрана 2025-09-07 211748" src="https://github.com/user-attachments/assets/53ade617-e84e-45b4-b027-aff026882041" />
+<img width="1920" height="1032" alt="Снимок экрана 2025-09-07 211919" src="https://github.com/user-attachments/assets/0c692cbf-8fd8-4f1e-b31f-120bc02cea2d" />
+<img width="1920" height="1032" alt="Снимок экрана 2025-09-07 211926" src="https://github.com/user-attachments/assets/a76de0af-19f4-4549-bae2-6de99fc1a671" />
+
 
