@@ -72,3 +72,18 @@ logs/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# DocFX output
+api/
+latex/
+*.pdf
+_site/
+docs/_site/
+output/
+docfx/_site/
+docs/output/
+
+# Временные/кэшируемые файлы DocFX
+*.cache
+.cache/
+docfx-cache/

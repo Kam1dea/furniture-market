@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using AutoMapper;
 using Furniture.Application.Dtos.WorkerProfile;
 using Furniture.Application.Exceptions;

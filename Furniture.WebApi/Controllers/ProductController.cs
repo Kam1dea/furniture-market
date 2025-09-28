@@ -1,4 +1,4 @@
-using Furniture.Application.Dtos.Product;
+﻿using Furniture.Application.Dtos.Product;
 using Furniture.Application.Exceptions;
 using Furniture.Application.Interfaces.Repositories;
 using Furniture.Application.Interfaces.Services;
@@ -21,8 +21,11 @@ public class ProductController : ControllerBase
     }
 
     /// <summary>
-    /// Получить все товары
+    /// Получить все товары.
     /// </summary>
+    /// <returns>
+    /// Список всех товаров.
+    /// </returns>
     [HttpGet]
     [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<ProductDto>>> GetAll()
@@ -32,8 +35,14 @@ public class ProductController : ControllerBase
     }
 
     /// <summary>
-    /// Получить товар по ID
+    /// Получить товар по ID.
     /// </summary>
+    /// <param name="id">
+    /// Id продукта.
+    /// </param>
+    /// <returns>
+    /// Продукт по указанному Id.
+    /// </returns>
     [HttpGet("{id:int}")]
     [AllowAnonymous]
     public async Task<ActionResult<ProductDto>> GetById(int id)
@@ -43,8 +52,11 @@ public class ProductController : ControllerBase
     }
     
     /// <summary>
-    /// Получить товары текущего работника
+    /// Получить товары текущего работника.
     /// </summary>
+    /// <returns>
+    /// Товары текущего работника.
+    /// </returns>
     [HttpGet("my")]
     [Authorize(Roles = "Worker")]
     public async Task<ActionResult<IEnumerable<ProductDto>>> GetMyProducts()
@@ -54,8 +66,10 @@ public class ProductController : ControllerBase
     }
 
     /// <summary>
-    /// Получить товары по ID профиля работника
+    /// Получить товары по ID профиля работника.
     /// </summary>
+    /// <param name="id">Id профиля работника.</param>
+    /// <returns>Товары работника по переданному Id.</returns>
     [HttpGet("worker-profile/{id:int}")]
     [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<ProductDto>>> GetByWorkerProfileId(int id)
@@ -65,7 +79,7 @@ public class ProductController : ControllerBase
     }
     
     /// <summary>
-    /// Создать новый товар (только Worker)
+    /// Создать новый товар (только Worker).
     /// </summary>
     [HttpPost("create-with-image")]
     [Authorize(Roles = "Worker")]
@@ -79,7 +93,7 @@ public class ProductController : ControllerBase
     }
 
     /// <summary>
-    /// Обновить товар (только владелец)
+    /// Обновить товар (только владелец).
     /// </summary>
     [HttpPut("update-with-images/{id:int}")]
     [Authorize(Roles = "Worker")]
@@ -93,7 +107,7 @@ public class ProductController : ControllerBase
     }
 
     /// <summary>
-    /// Удалить товар (только владелец)
+    /// Удалить товар (только владелец).
     /// </summary>
     [HttpDelete("{id:int}")]
     [Authorize(Roles = "Worker")]
