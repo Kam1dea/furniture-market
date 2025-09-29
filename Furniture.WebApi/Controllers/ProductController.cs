@@ -20,12 +20,8 @@ public class ProductController : ControllerBase
         _productService = productService;
     }
 
-    /// <summary>
-    /// Получить все товары.
-    /// </summary>
-    /// <returns>
-    /// Список всех товаров.
-    /// </returns>
+    /// <summary>Получить все товары.</summary>
+    /// <returns>Список всех товаров.</returns>
     [HttpGet]
     [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<ProductDto>>> GetAll()
@@ -34,15 +30,9 @@ public class ProductController : ControllerBase
         return Ok(products);
     }
 
-    /// <summary>
-    /// Получить товар по ID.
-    /// </summary>
-    /// <param name="id">
-    /// Id продукта.
-    /// </param>
-    /// <returns>
-    /// Продукт по указанному Id.
-    /// </returns>
+    /// <summary>Получить товар по ID.</summary>
+    /// <param name="id">Id продукта.</param>
+    /// <returns>Продукт по указанному Id.</returns>
     [HttpGet("{id:int}")]
     [AllowAnonymous]
     public async Task<ActionResult<ProductDto>> GetById(int id)
@@ -51,12 +41,8 @@ public class ProductController : ControllerBase
         return Ok(product);
     }
     
-    /// <summary>
-    /// Получить товары текущего работника.
-    /// </summary>
-    /// <returns>
-    /// Товары текущего работника.
-    /// </returns>
+    /// <summary>Получить товары текущего работника.</summary>
+    /// <returns>Товары текущего работника.</returns>
     [HttpGet("my")]
     [Authorize(Roles = "Worker")]
     public async Task<ActionResult<IEnumerable<ProductDto>>> GetMyProducts()
@@ -65,9 +51,7 @@ public class ProductController : ControllerBase
         return Ok(products);
     }
 
-    /// <summary>
-    /// Получить товары по ID профиля работника.
-    /// </summary>
+    /// <summary>Получить товары по ID профиля работника.</summary>
     /// <param name="id">Id профиля работника.</param>
     /// <returns>Товары работника по переданному Id.</returns>
     [HttpGet("worker-profile/{id:int}")]
@@ -78,9 +62,9 @@ public class ProductController : ControllerBase
         return Ok(products);
     }
     
-    /// <summary>
-    /// Создать новый товар (только Worker).
-    /// </summary>
+    /// <summary>Создать новый товар (только Worker).</summary>
+    /// <param name="dto">Информация о товаре.</param>>
+    /// <returns>Созданный товар.</returns>>
     [HttpPost("create-with-image")]
     [Authorize(Roles = "Worker")]
     public async Task<ActionResult<ProductDto>> Create([FromForm] CreateProductWithImageDto dto)
@@ -92,9 +76,9 @@ public class ProductController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
     }
 
-    /// <summary>
-    /// Обновить товар (только владелец).
-    /// </summary>
+    /// <summary>Обновить товар (только владелец).</summary>
+    /// <param name="id">Id товара, который требуется обновить.</param>>
+    /// <returns>Обновленный товар.</returns>>
     [HttpPut("update-with-images/{id:int}")]
     [Authorize(Roles = "Worker")]
     public async Task<ActionResult<ProductDto>> Update(int id, [FromForm] UpdateProductWithImageDto dto)
@@ -106,9 +90,8 @@ public class ProductController : ControllerBase
         return NoContent();
     }
 
-    /// <summary>
-    /// Удалить товар (только владелец).
-    /// </summary>
+    /// <summary>Удалить товар (только владелец).</summary>
+    /// <param name="id">Id товара, который следует удалить.</param>>
     [HttpDelete("{id:int}")]
     [Authorize(Roles = "Worker")]
     public async Task<ActionResult> Delete(int id)
